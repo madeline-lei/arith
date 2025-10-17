@@ -23,12 +23,18 @@ struct ConvertClosure {
         A2Methods_T methods;
 };
 
-UArray2b_T rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
+// UArray2b_T 
+A2Methods_UArray2 rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
                       const A2Methods_T methods)
 {
-        UArray2b_T destination = UArray2b_new(methods->width(original),
-                                              methods->height(original),
-                                              sizeof(struct YPbPr_pixel), 2);
+        // UArray2b_T destination = UArray2b_new(methods->width(original),
+        //                                       methods->height(original),
+        //                                       sizeof(struct YPbPr_pixel), 2);
+
+        A2Methods_UArray2 destination = methods->new_with_blocksize(
+                                                methods->width(original),
+                                                methods->height(original),
+                                                sizeof(struct YPbPr_pixel), 2);
 
         struct ConvertClosure *cl = malloc(sizeof(*cl));
         assert(cl != NULL);
@@ -36,7 +42,9 @@ UArray2b_T rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
         cl->denominator = denominator;
         cl->methods = methods;
 
-        UArray2b_map(destination, convertYbPbPrApply, cl);
+        methods->map_block_major(destination, convertYbPbPrApply, cl);
+        // UArray2b_map(destination, convertYbPbPrApply, cl);
+        free(cl);
 
         return destination;
 }
@@ -57,8 +65,10 @@ struct YPbPr_pixel pixelToYPbPr(Pnm_rgb pixel, unsigned denominator)
         return newPixel;
 }
 
-void convertYbPbPrApply(int col, int row, UArray2b_T array2b, void *elem,
-                        void *cl)
+// void convertYbPbPrApply(int col, int row, UArray2b_T array2b, void *elem,
+//                         void *cl)
+void convertYbPbPrApply(int col, int row, A2Methods_UArray2 array2,
+                        A2Methods_Object *elem, void *cl)
 {
         assert(elem != NULL && cl != NULL);
 
@@ -72,7 +82,7 @@ void convertYbPbPrApply(int col, int row, UArray2b_T array2b, void *elem,
 
         *newPixel = pixelToYPbPr(currPixel, convertcl->denominator);
 
-        (void) array2b;
+        (void) array2;
 }
 
 /* -------------------------------------------------------------------------------------*/
@@ -80,9 +90,14 @@ void convertYbPbPrApply(int col, int row, UArray2b_T array2b, void *elem,
 A2Methods_UArray2 YPbPrToRGB(A2Methods_UArray2 original, unsigned denominator,
                              const A2Methods_T methods)
 {
-        A2Methods_UArray2 destination = methods->new(methods->width(original),
-                                                     methods->height(original),
-                                                     sizeof(struct Pnm_rgb));
+        // A2Methods_UArray2 destination = methods->new(methods->width(original),
+        //                                              methods->height(original),
+        //                                              sizeof(struct Pnm_rgb));
+
+        A2Methods_UArray2 destination = methods->new_with_blocksize(
+                                                methods->width(original),
+                                                methods->height(original),
+                                                sizeof(struct Pnm_rgb), 2);
 
         struct ConvertClosure *cl = malloc(sizeof(*cl));
         assert(cl != NULL);
@@ -90,7 +105,8 @@ A2Methods_UArray2 YPbPrToRGB(A2Methods_UArray2 original, unsigned denominator,
         cl->denominator = denominator;
         cl->methods = methods;
 
-        methods->map_default(destination, convertRgbApply, cl);
+        methods->map_block_major(destination, convertRgbApply, cl);
+        // methods->map_default(destination, convertRgbApply, cl);
 
         return destination;
 }
@@ -107,6 +123,25 @@ struct Pnm_rgb pixelToRGB(struct YPbPr_pixel *pixel, unsigned denominator)
         float r = 1 * Y + 0 * Pb + 1.402 * Pr;
         float g = 1 * Y - 0.344136 * Pb - 0.714136 * Pr;
         float b = 1.0 * Y + 1.772 * Pb + 0.0 * Pr;
+        //a real number between 0 and 1
+        // if (r < 0) {
+        //         r = 0;
+        // }
+        // if (r > 1) {
+        //         r = 1;
+        // }
+        // if (g < 0) {
+        //         g = 0;
+        // }
+        // if (g > 1) {
+        //         g = 1;
+        // }
+        // if (b < 0) {
+        //         b = 0;
+        // }
+        // if (b > 1) {
+        //         b = 1;
+        // }
 
         newPixel.red = (unsigned) (r * denominator + 0.5);
         newPixel.green = (unsigned) (g * denominator + 0.5);
@@ -132,4 +167,31 @@ void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
         *newPixel = pixelToRGB(oldPixel, convertcl->denominator);
 
         (void) array2;
+}
+
+
+/* -------------------------------------------------------------------------------------*/
+
+void averages(struct YPbPr_pixel *pixel) {
+        float PbAvg = (p1->Pb + p2->Pb + p3->Pb + p4->Pb) / 4.0;
+        float PrAvg = (p1->Pr + p2->Pr + p3->Pr + p4->Pr) / 4.0;
+
+        AvgPb = Arith40_index_of_chroma(float PbAvg);
+        AvgPr = Arith40_index_of_chroma(float PrAvg);
+}
+void pixelToDCT(float Y1, float Y2, float Y3, float Y4, float *a, float *b, 
+                float *c, float *d) {
+        assert(a && b && c && d);
+        *a = (Y4 + Y3 + Y2 + Y1) / 4.0;
+        *b = (Y4 + Y3 - Y2 - Y1) / 4.0;
+        *c = (Y4 - Y3 + Y2 - Y1) / 4.0;
+        *d = (Y4 - Y3 - Y2 + Y1) / 4.0;
+}
+
+void DCTtoPixel(float a, float b, float c, float d,
+                float *Y1, float *Y2, float *Y3, float *Y4) {
+        *Y1 = a - b - c + d;
+        *Y2 = a - b + c - d;
+        *Y3 = a + b - c - d;
+        *Y4 = a + b + c + d;
 }
