@@ -64,7 +64,7 @@ all: ppmdiff
 ppmdiff: ppmdiff.o uarray2b.o uarray2.o a2plain.o a2blocked.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-40image: 40image.o compress40.o uarray2b.o uarray2.o a2blocked.o a2plain.o handlePPM.o convertColor.o
+40image: 40image.o compress40.o uarray2b.o uarray2.o a2blocked.o a2plain.o handlePPM.o convertColor.o 2x2pack.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 

@@ -1,22 +1,24 @@
-#ifndef CONVERT_COLOR_INCLUDED
-#define CONVERT_COLOR_INCLUDED
+#ifndef CONVERT_COLOR_H
+#define CONVERT_COLOR_H
 
 #include "pnm.h"
 #include "uarray2b.h"
 
 #include <stdio.h>
 
-UArray2b_T rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
-                      const A2Methods_T methods);
+A2Methods_UArray2 rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
+                             const struct A2Methods_T *methods);
 struct YPbPr_pixel pixelToYPbPr(Pnm_rgb pixel, unsigned denominator);
-void convertYbPbPrApply(int col, int row, UArray2b_T array2b, void *elem,
-                        void *cl);
+void convertYbPbPrApply(int col, int row, A2Methods_UArray2 array2,
+                        A2Methods_Object *elem, void *cl);
 
 A2Methods_UArray2 YPbPrToRGB(A2Methods_UArray2 original, unsigned denominator,
-                             const A2Methods_T methods);
+                             const struct A2Methods_T *methods);
 struct Pnm_rgb pixelToRGB(struct YPbPr_pixel *pixel, unsigned denominator);
 void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
                      void *cl);
+
+float clamp(float value, float min, float max);
 
 struct YPbPr_pixel {
         float Y;
