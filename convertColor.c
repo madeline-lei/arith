@@ -4,6 +4,7 @@
 #include "a2plain.h"
 #include "assert.h"
 #include <stdlib.h>
+#include <math.h>
 
 // void print(int col, int row, UArray2b_T array2b, void *elem, void *cl);
 
@@ -122,9 +123,9 @@ struct Pnm_rgb pixelToRGB(struct YPbPr_pixel *pixel, unsigned denominator)
         g = clamp(g, 0, 1);
         b = clamp(b, 0, 1);
 
-        newPixel.red = (unsigned) (r * denominator + 0.5);
-        newPixel.green = (unsigned) (g * denominator + 0.5);
-        newPixel.blue = (unsigned) (b * denominator + 0.5);
+        newPixel.red = (unsigned) round(r * denominator);
+        newPixel.green = (unsigned) round(g * denominator);
+        newPixel.blue = (unsigned) round(b * denominator);
 
         return newPixel;
 }
@@ -148,6 +149,8 @@ void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
         (void) array2;
 }
 
+/* -------------------------------------------------------------------------------------*/
+
 float clamp(float value, float min, float max)
 {
         if (value < min) {
@@ -159,5 +162,3 @@ float clamp(float value, float min, float max)
 
         return value;
 }
-
-/* -------------------------------------------------------------------------------------*/

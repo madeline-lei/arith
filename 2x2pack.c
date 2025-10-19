@@ -5,7 +5,6 @@
 #include "a2plain.h"
 #include "assert.h"
 #include "2x2pack.h"
-#include "arith40.h"
 
 const int BLOCK_SIZE = 2;
 
@@ -67,8 +66,8 @@ void averageChroma(struct YPbPr_pixel *p1, struct YPbPr_pixel *p2,
         float PbAvg = (p1->Pb + p2->Pb + p3->Pb + p4->Pb) / 4.0;
         float PrAvg = (p1->Pr + p2->Pr + p3->Pr + p4->Pr) / 4.0;
 
-        block->avgPb = Arith40_index_of_chroma(PbAvg);
-        block->avgPr = Arith40_index_of_chroma(PrAvg);
+        block->avgPb = PbAvg;
+        block->avgPr = PrAvg;
 }
 
 void pixelToDCT(float Y1, float Y2, float Y3, float Y4,
@@ -163,8 +162,8 @@ void setChromaApply(int col, int row, A2Methods_UArray2 array2, void *elem,
         struct YPbPr_block *currBlock =
                 methods->at(original, col / BLOCK_SIZE, row / BLOCK_SIZE);
 
-        currPix->Pb = Arith40_chroma_of_index(currBlock->avgPb);
-        currPix->Pr = Arith40_chroma_of_index(currBlock->avgPr);
+        currPix->Pb = currBlock->avgPb;
+        currPix->Pr = currBlock->avgPr;
 
         (void) array2;
 }

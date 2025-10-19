@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         Pnm_ppm image1 = Pnm_ppmread(fp1, methods);
         Pnm_ppm image2 = Pnm_ppmread(fp2, methods);
 
-        if (abs((int) (image1->height - image2->height)) < 1) {
+        if (abs((int) (image1->height - image2->height)) > 1) {
                 fprintf(stderr, "image heights/widths differ by more than 1\n");
                 printf("1\n");
                 return 0;

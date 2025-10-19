@@ -64,9 +64,11 @@ all: ppmdiff
 ppmdiff: ppmdiff.o uarray2b.o uarray2.o a2plain.o a2blocked.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-40image: 40image.o compress40.o uarray2b.o uarray2.o a2blocked.o a2plain.o handlePPM.o convertColor.o 2x2pack.o
+40image: 40image.o compress40.o uarray2b.o uarray2.o a2blocked.o a2plain.o bitpack.o handlePPM.o convertColor.o 2x2pack.o quantize.o packWord.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
+bitpack_test: bitpack_test.o bitpack.o
+	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 clean:
 	rm -f ppmdiff *.o
