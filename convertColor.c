@@ -262,7 +262,7 @@ void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
 
 /*
  * Name:       clamp
- * Purpose:    Fit a floating-point value within a given range, returning either the
+ * Purpose:    fit a floating-point value within a given range, returning either the
  *             min or max if it exceeds those limits
  * Parameters: float value: a number that needs to be clamped
  *             float min: the minimum value in the range
