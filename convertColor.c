@@ -24,6 +24,25 @@ struct ConvertClosure {
         const struct A2Methods_T *methods;
 };
 
+
+/*
+ * Name:       rgbToYPbPr
+ * Purpose:    Creates and initializes a new array representing an image converted 
+ *             from RGB color space to component video color space
+ * Parameters: A2Methods_UArray2 original: the UArray2 holding the pixels of the 
+ *             original image in RGB color space
+ *             unsigned denominator: an integer representing the maximum color value
+ *             const struct A2Methods_T *methods: an A2Methods_T struct that contains 
+ *             pointers to functions one can use on the array containing the pixels
+ * Return:     a pointer to the newly allocated A2Methods_UArray2 representing
+ *             the image converted from RGB to component video color space
+ * Expects:    original to not be NULL
+ *             methods to not be NULL
+ * Notes:      will CRE if it fails to malloc cl 
+ *             will CRE if original is NULL
+ *             The new() function in the methods suite will throw a CRE if
+ *             height or width are not nonnegative            
+ */
 A2Methods_UArray2 rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
                              const struct A2Methods_T *methods)
 {
@@ -44,6 +63,20 @@ A2Methods_UArray2 rgbToYPbPr(A2Methods_UArray2 original, unsigned denominator,
         return destination;
 }
 
+
+/*
+ * Name:       pixelToYPbPr
+ * Purpose:    Change a single pixel in RGB color space to its floating-point 
+ *             representation in component video color space
+ * Parameters: Pnm_rgb pixel: the pixel of an image in RGB color space
+ *             unsigned denominator: an integer representing the maximum color value
+ * Return:     a struct representing the new pixel in component video color space
+ * Expects:    pixel to not be NULL
+ * Notes:      will CRE if pixel is NULL
+ *             If the floating point representation of pixels in RGB color 
+ *             space are out of bounds, they are clamped to their assigned range
+ *             when converting to Y, Pb, and Pr.
+ */
 struct YPbPr_pixel pixelToYPbPr(Pnm_rgb pixel, unsigned denominator)
 {
         assert(pixel != NULL);
@@ -65,6 +98,27 @@ struct YPbPr_pixel pixelToYPbPr(Pnm_rgb pixel, unsigned denominator)
         return newPixel;
 }
 
+
+/*
+ * Name:       convertYbPbPrApply
+ * Purpose:    Transform each pixel from RGB color space into component video color space
+ * Parameters: int col: an integer representing the distance between the
+ *             current element and the left edge of the array
+ *             int row: an integer representing the distance between the
+ *             current element and the top of the array
+ *             A2Methods_UArray2 array2: required by the A2Methods_Object
+ *             interface; ignored here
+ *             A2Methods_Object *elem: a pointer to a YPbPr_pixel representing the current
+ *             pixel of the image transformed into component video color space
+ *             void *cl: a pointer to a closure containing the original image data
+ * Return:     None
+ * Expects:    elem to not be NULL and cl to not be NULL
+ *             col and row are within the bounds of the array
+ * Notes:      will CRE if cl is NULL
+ *             will CRE if elem is NULL
+ *             If col or row are out of bounds or not used by the array,
+ *             the methods->at function will throw a CRE
+ */
 void convertYbPbPrApply(int col, int row, A2Methods_UArray2 array2,
                         A2Methods_Object *elem, void *cl)
 {
@@ -85,6 +139,25 @@ void convertYbPbPrApply(int col, int row, A2Methods_UArray2 array2,
 
 /* -------------------------------------------------------------------------------------*/
 
+
+/*
+ * Name:       YPbPrToRGB
+ * Purpose:    Creates and initializes a new array representing an image converted 
+ *             from component video color space back to RGB color space
+ * Parameters: A2Methods_UArray2 original: the UArray2 holding the pixels of the 
+ *             image transformed to component video color space
+ *             unsigned denominator: an integer representing the maximum color value
+ *             const struct A2Methods_T *methods: an A2Methods_T struct that contains 
+ *             pointers to functions one can use on the array containing the pixels
+ * Return:     a pointer to the newly allocated A2Methods_UArray2 representing
+ *             the image converted from component video color space to RGB color space
+ * Expects:    original to not be NULL
+ *             methods to not be NULL
+ * Notes:      will CRE if it fails to malloc cl 
+ *             will CRE if original is NULL
+ *             The new() function in the methods suite will throw a CRE if
+ *             height or width are not nonnegative            
+ */
 A2Methods_UArray2 YPbPrToRGB(A2Methods_UArray2 original, unsigned denominator,
                              const struct A2Methods_T *methods)
 {
@@ -106,6 +179,21 @@ A2Methods_UArray2 YPbPrToRGB(A2Methods_UArray2 original, unsigned denominator,
         return destination;
 }
 
+
+/*
+ * Name:       pixelToRGB
+ * Purpose:    Change a single pixel from component video color space back to 
+ *             RGB color space 
+ * Parameters: struct YPbPr_pixel *pixel: a pointer to a pixel in component 
+ *             video color space
+ *             unsigned denominator: an integer representing the maximum color value
+ * Return:     a struct representing the new pixel in RGB color space
+ * Expects:    pixel to not be NULL
+ * Notes:      will CRE if pixel is NULL
+ *             If the floating point representation of pixels in component video 
+ *             color space are out of bounds, they are clamped to their assigned range
+ *             when converting to red, green, and blue.
+ */
 struct Pnm_rgb pixelToRGB(struct YPbPr_pixel *pixel, unsigned denominator)
 {
         assert(pixel != NULL);
@@ -130,6 +218,26 @@ struct Pnm_rgb pixelToRGB(struct YPbPr_pixel *pixel, unsigned denominator)
         return newPixel;
 }
 
+/*
+ * Name:       convertRgbApply
+ * Purpose:    Transform each pixel from component video color space into RGB color space
+ * Parameters: int col: an integer representing the distance between the
+ *             current element and the left edge of the array
+ *             int row: an integer representing the distance between the
+ *             current element and the top of the array
+ *             A2Methods_UArray2 array2: required by the A2Methods_Object
+ *             interface; ignored here
+ *             void *elem: a pointer to a Pnm_rgb representing the current
+ *             pixel of the image transformed into RGB color space
+ *             void *cl: a pointer to a closure containing the original image data
+ * Return:     None
+ * Expects:    elem to not be NULL and cl to not be NULL
+ *             col and row are within the bounds of the array
+ * Notes:      will CRE if cl is NULL
+ *             will CRE if elem is NULL
+ *             If col or row are out of bounds or not used by the array,
+ *             the methods->at function will throw a CRE
+ */
 void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
                      void *cl)
 {
@@ -151,6 +259,18 @@ void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
 
 /* -------------------------------------------------------------------------------------*/
 
+
+/*
+ * Name:       clamp
+ * Purpose:    fit a floating-point value within a given range, returning either the
+ *             min or max if it exceeds those limits
+ * Parameters: float value: a number that needs to be clamped
+ *             float min: the minimum value in the range
+ *             float max: the maximum value in the range
+ * Return:     a value clamped to the given range
+ * Expects:    None
+ * Notes:      None
+ */
 float clamp(float value, float min, float max)
 {
         if (value < min) {
