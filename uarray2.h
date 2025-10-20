@@ -1,10 +1,10 @@
 /**************************************************************
  *                     uarray2.h
  *
- *     Assignment: locality
+ *     Assignment: aruth
  *     Authors:  Diana Calderon and Madeline Lei
  *     Usernames: dcalde02, mlei03
- *     Date:     10/07/2025
+ *     Date:     10/21/2025
  *
  *     summary
  *

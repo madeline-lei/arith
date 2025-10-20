@@ -1,3 +1,20 @@
+/**************************************************************
+ *                     uarray2.c
+ *
+ *     Assignment: arith
+ *     Authors:  Diana Calderon and Madeline Lei
+ *     Usernames: dcalde02, mlei03
+ *     Date:     10/21/2025
+ *
+ *     summary:
+ *
+ *     This file contains the implementation for a UArray2b. It
+ *     implements the functions declared in uarray2b.h.
+ * 
+ *     NOTE: This file was provided by the course
+ *
+ **************************************************************/
+
 #include <math.h>
 #include "assert.h"
 #include "mem.h"

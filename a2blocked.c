@@ -1,3 +1,20 @@
+/**************************************************************
+ *                     a2blocked.c
+ *
+ *     Assignment: arith
+ *     Authors:  Diana Calderon and Madeline Lei
+ *     Usernames: dcalde02, mlei03
+ *     Date:     10/21/2025
+ *
+ *     summary:
+ *
+ *     This file is an method suite that contains function pointers  
+ *     that can be applied to a UArray2b. It defines a private version 
+ *     of each function in A2Methods_T that we implement.
+ * 
+ *     NOTE: This file was provided by the course
+ *
+ **************************************************************/
 #include <string.h>
 
 #include <a2blocked.h>
