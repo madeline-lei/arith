@@ -18,8 +18,6 @@ struct Pnm_rgb pixelToRGB(struct YPbPr_pixel *pixel, unsigned denominator);
 void convertRgbApply(int col, int row, A2Methods_UArray2 array2, void *elem,
                      void *cl);
 
-float clamp(float value, float min, float max);
-
 struct YPbPr_pixel {
         float Y;
         float Pb;

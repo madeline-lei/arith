@@ -26,38 +26,44 @@ void compress40(FILE *input)
 
         A2Methods_UArray2 packedPix = packWord(quantizedPix, original->methods);
 
-        A2Methods_UArray2 depackedPix =
-                unpackWord(packedPix, original->methods);
+        printCompressedImage(packedPix, original->methods);
 
-        A2Methods_UArray2 dequantizedPix =
-                dequantizeData(depackedPix, original->methods);
-
-        A2Methods_UArray2 unblockedPixels =
-                unpackBlock(dequantizedPix, original->methods);
-
-        A2Methods_UArray2 decompressed = YPbPrToRGB(
-                unblockedPixels, original->denominator, original->methods);
-
-        struct Pnm_ppm pixmap = {
-                .width = uarray2_methods_plain->width(unblockedPixels),
-                .height = uarray2_methods_plain->height(unblockedPixels),
-                .denominator = original->denominator,
-                .pixels = decompressed,
-                .methods = original->methods
-        };
-
-        // Pnm_ppmwrite(stdout, original);
-        Pnm_ppmwrite(stdout, &pixmap);
-
-        original->methods->free(&unblockedPixels);
-        original->methods->free(&blockedPixels);
         original->methods->free(&YPbPr_pixels);
+        original->methods->free(&blockedPixels);
+        original->methods->free(&quantizedPix);
+        original->methods->free(&packedPix);
 
         Pnm_ppmfree(&original);
-        // Pnm_ppmfree(&pixmap);
 }
 
 void decompress40(FILE *input)
 {
-        (void) input;
+        A2Methods_T methods = uarray2_methods_plain;
+        assert(methods != NULL);
+
+        A2Methods_UArray2 compressedImage = readInCompressed(input, methods);
+
+        A2Methods_UArray2 depackedPix = unpackWord(compressedImage, methods);
+
+        A2Methods_UArray2 dequantizedPix = dequantizeData(depackedPix, methods);
+
+        A2Methods_UArray2 unblockedPixels =
+                unpackBlock(dequantizedPix, methods);
+
+        A2Methods_UArray2 decompressedImage =
+                YPbPrToRGB(unblockedPixels, 255, methods);
+
+        struct Pnm_ppm pixmap = { .width = methods->width(decompressedImage),
+                                  .height = methods->height(decompressedImage),
+                                  .denominator = 255,
+                                  .pixels = decompressedImage,
+                                  .methods = methods };
+
+        Pnm_ppmwrite(stdout, &pixmap);
+
+        methods->free(&compressedImage);
+        methods->free(&depackedPix);
+        methods->free(&dequantizedPix);
+        methods->free(&unblockedPixels);
+        methods->free(&decompressedImage);
 }

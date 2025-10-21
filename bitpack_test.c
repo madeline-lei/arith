@@ -6,38 +6,70 @@
 
 int main()
 {
-        uint64_t word = 0x00; // start with empty word
+        uint64_t word;
+        unsigned width;
+        unsigned lsb;
+        int64_t val;
 
-        // Test 1: Insert small positive number
-        word = Bitpack_news(word, 3, 0, 3); // 3 fits in 3 bits
-        int64_t got = Bitpack_gets(word, 3, 0);
-        printf("Test 1: expected 3, got %ld\n", got);
-        assert(got == 3);
+        // --------------------------
+        // Unsigned insertion test
+        // --------------------------
+        word = 0x3f4;
+        width = 6;
+        lsb = 2;
+        val = 7;
 
-        // Test 2: Insert negative number
-        word = Bitpack_news(word, 3, 3, -2); // -2 in 3 bits
-        got = Bitpack_gets(word, 3, 3);
-        printf("Test 2: expected -2, got %ld\n", got);
-        assert(got == -2);
+        assert(Bitpack_getu(Bitpack_newu(word, width, lsb, val), width, lsb) ==
+               (uint64_t) val);
+        printf("Unsigned test passed\n");
 
-        // Test 3: Insert maximum positive number
-        word = Bitpack_news(word, 4, 6, 7); // 7 fits in 4-bit signed
-        got = Bitpack_gets(word, 4, 6);
-        printf("Test 3: expected 7, got %ld\n", got);
-        assert(got == 7);
+        // --------------------------
+        // Signed positive test
+        // --------------------------
+        word = 0x0;
+        width = 5;
+        lsb = 0;
+        val = 10; // fits in 5-bit signed
 
-        // Test 4: Insert maximum negative number
-        word = Bitpack_news(word, 4, 10, -8); // -8 fits in 4-bit signed
-        got = Bitpack_gets(word, 4, 10);
-        printf("Test 4: expected -8, got %ld\n", got);
-        assert(got == -8);
+        assert(Bitpack_gets(Bitpack_news(word, width, lsb, val), width, lsb) ==
+               val);
+        printf("Signed positive test passed\n");
 
-        // Test 5: Overwriting previous bits
-        word = Bitpack_news(word, 3, 0, -4); // overwrite first 3 bits
-        got = Bitpack_gets(word, 3, 0);
-        printf("Test 5: expected -4, got %ld\n", got);
-        assert(got == -4);
+        // -- -- -- -- -- -- -- -- -- -- -- -- --Signed negative
+        //                                             test-- -- -- -- -- -- -- -- -- -- -- -- --
+        word = 0x0;
+        width = 5;
+        lsb = 0;
+        val = -3; // fits in 5-bit signed
 
-        printf("All signed packing tests passed!\n");
+        assert(Bitpack_gets(Bitpack_news(word, width, lsb, val), width, lsb) ==
+               val);
+        printf("Signed negative test passed\n");
+
+        // --------------------------
+        // Overlapping insertion test
+        // --------------------------
+        word = 0x12345678;
+        width = 4;
+        lsb = 8;
+        val = 0xA; // unsigned 4-bit
+
+        assert(Bitpack_getu(Bitpack_newu(word, width, lsb, val), width, lsb) ==
+               (uint64_t) val);
+        printf("Overlapping unsigned test passed\n");
+
+        // --------------------------
+        // Full word signed test
+        // --------------------------
+        word = 0x0;
+        width = 32;
+        lsb = 0;
+        val = -12345678;
+
+        assert(Bitpack_gets(Bitpack_news(word, width, lsb, val), width, lsb) ==
+               val);
+        printf("Full 32-bit signed test passed\n");
+
+        printf("All tests passed!\n");
         return 0;
 }

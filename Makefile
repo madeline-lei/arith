@@ -72,3 +72,17 @@ bitpack_test: bitpack_test.o bitpack.o
 
 clean:
 	rm -f ppmdiff *.o
+
+TESTS = animals desert erosion flowers from-wind-cave halligan \
+        in-wind-cave mobo rock segfault wind-cave
+
+.PHONY: test
+test:
+	@$(foreach t, $(TESTS), \
+		echo "------$(t)------"; \
+		./40image -c ./ppm_tests/$(t).ppm > temp.ppm; \
+		./40image -d temp.ppm > ./ppm_tests/$(t)-out.ppm; \
+		./ppmdiff ./ppm_tests/$(t).ppm ./ppm_tests/$(t)-out.ppm; \
+		echo "------------------"; \
+	)
+	@rm -f temp.ppm

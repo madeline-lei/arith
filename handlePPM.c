@@ -2,7 +2,11 @@
 #include "a2plain.h"
 #include "a2methods.h"
 #include "assert.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include "bitpack.h"
+
+const int BYTES_PER_WORD = 4;
 
 Pnm_ppm readInPPM(FILE *input)
 {
@@ -13,13 +17,6 @@ Pnm_ppm readInPPM(FILE *input)
         assert(original != NULL);
 
         Pnm_ppm destination = trimImage(original);
-
-        // printf("original width: %d, height: %d\n", original->width,
-        //        original->height);
-        // printf("new width: %d, height: %d\n", destination->width,
-        //        destination->height);
-
-        // Pnm_ppmwrite(stdout, destination);
 
         Pnm_ppmfree(&original);
 
@@ -54,4 +51,63 @@ Pnm_ppm trimImage(Pnm_ppm original)
         }
 
         return trimmed_image;
+}
+
+void printCompressedImage(A2Methods_UArray2 image,
+                          const struct A2Methods_T *methods)
+{
+        printf("COMP40 Compressed image format 2\n%u %u\n",
+               methods->width(image) * 2, methods->height(image) * 2);
+        methods->map_row_major(image, printWordApply, NULL);
+}
+
+void printWordApply(int col, int row, A2Methods_UArray2 array2,
+                    A2Methods_Object *elem, void *cl)
+{
+        assert(elem != NULL);
+        uint32_t *word = elem;
+        putchar(Bitpack_getu(*word, 8, 24));
+        putchar(Bitpack_getu(*word, 8, 16));
+        putchar(Bitpack_getu(*word, 8, 8));
+        putchar(Bitpack_getu(*word, 8, 0));
+
+        (void) col;
+        (void) row;
+        (void) array2;
+        (void) cl;
+}
+
+A2Methods_UArray2 readInCompressed(FILE *input,
+                                   const struct A2Methods_T *methods)
+{
+        assert(input != NULL);
+        unsigned height, width;
+        int read = fscanf(input, "COMP40 Compressed image format 2\n%u %u",
+                          &width, &height);
+        assert(read == 2);
+        int c = getc(input);
+        assert(c == '\n');
+
+        unsigned wordsHeight = height / 2;
+        unsigned wordsWidth = width / 2;
+        A2Methods_UArray2 words =
+                methods->new(wordsWidth, wordsHeight, sizeof(uint32_t));
+
+        for (unsigned row = 0; row < wordsHeight; row++) {
+                for (unsigned col = 0; col < wordsWidth; col++) {
+                        uint32_t word = 0;
+                        for (int byte = BYTES_PER_WORD - 1; byte >= 0; byte--) {
+                                c = getc(input);
+                                assert(c != EOF);
+                                word = Bitpack_newu(word, 8, byte * 8, c);
+                        }
+
+                        uint32_t *currWordElement =
+                                methods->at(words, col, row);
+
+                        *currWordElement = word;
+                }
+        }
+
+        return words;
 }
