@@ -1,16 +1,24 @@
+/**************************************************************
+ *                     2x2pack.h
+ *
+ *     Assignment: arith
+ *     Authors:  Diana Calderon and Madeline Lei
+ *     Usernames: dcalde02, mlei03
+ *     Date:     10/21/2025
+ *
+ *     summary:
+ *
+ *     This file contains the function declarations for 2x2pack.c.
+ *     These functions will deal with packing pixels of a PPM in 2x2 regions
+ *     into blocks (for compression), and unpacking those blocks into pixels
+ *     (for decompression).
+ *
+ **************************************************************/
+
 #ifndef TWOBYTWO_PACK_H
 #define TWOBYTWO_PACK_H
 
-#include "convertColor.h"
-
-struct YPbPr_block {
-        float a;
-        float b;
-        float c;
-        float d;
-        float avgPb;
-        float avgPr;
-};
+#include "helpers.h"
 
 A2Methods_UArray2 packBlock(A2Methods_UArray2 original,
                             const struct A2Methods_T *methods);

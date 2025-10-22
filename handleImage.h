@@ -1,5 +1,5 @@
 /**************************************************************
- *                     2x2pack.c
+ *                     handleImage.h
  *
  *     Assignment: arith
  *     Authors:  Diana Calderon and Madeline Lei
@@ -8,15 +8,14 @@
  *
  *     summary:
  *
- *     This file contains the packBlock() and unpackBlock() functions,
- *     which pack the pixels of a PPM image into 2x2 blocks or 
- *     unpack those blocks into arrays of 4 pixels, respectively.
+ *     This file contains function declarations for handleImage.c.
+ *     These functions will deal with reading in images stored as compressed
+ *     and decompressed PPMs and printing them out.
  *
  **************************************************************/
-#ifndef HANDLE_PPM_H
-#define HANDLE_PPM_H
+#ifndef HANDLE_IMAGE_H
+#define HANDLE_IMAGE_H
 
-#include <stdio.h>
 #include "pnm.h"
 
 Pnm_ppm readInPPM(FILE *input);

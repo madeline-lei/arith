@@ -49,7 +49,7 @@ INCLUDES = $(shell echo *.h)
 
 ############### Rules ###############
 
-all: ppmdiff
+all: 40image
 
 
 ## Compile step (.c files -> .o files)
@@ -61,28 +61,11 @@ all: ppmdiff
 
 ## Linking step (.o -> executable program)
 
+40image: 40image.o compress40.o uarray2b.o uarray2.o a2blocked.o a2plain.o bitpack.o handleImage.o convertColor.o 2x2pack.o quantize.o packWord.o
+	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+
 ppmdiff: ppmdiff.o uarray2b.o uarray2.o a2plain.o a2blocked.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-40image: 40image.o compress40.o uarray2b.o uarray2.o a2blocked.o a2plain.o bitpack.o handlePPM.o convertColor.o 2x2pack.o quantize.o packWord.o
-	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
-
-bitpack_test: bitpack_test.o bitpack.o
-	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
-
 clean:
-	rm -f ppmdiff *.o
-
-TESTS = animals desert erosion flowers from-wind-cave halligan \
-        in-wind-cave mobo rock segfault wind-cave
-
-.PHONY: test
-test:
-	@$(foreach t, $(TESTS), \
-		echo "------$(t)------"; \
-		./40image -c ./ppm_tests/$(t).ppm > temp.ppm; \
-		./40image -d temp.ppm > ./ppm_tests/$(t)-out.ppm; \
-		./ppmdiff ./ppm_tests/$(t).ppm ./ppm_tests/$(t)-out.ppm; \
-		echo "------------------"; \
-	)
-	@rm -f temp.ppm
+	rm -f ppmdiff 40image *.o

@@ -1,3 +1,17 @@
+/**************************************************************
+ *                     ppmdiff.c
+ *
+ *     Assignment: arith
+ *     Authors:  Diana Calderon and Madeline Lei
+ *     Usernames: dcalde02, mlei03
+ *     Date:     10/21/2025
+ *
+ *     summary:
+ *
+ *     This file compares two PPMs, and returns an integer based on
+ *     how different they are.
+ *
+ **************************************************************/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -10,6 +24,28 @@
 
 static FILE *openOrAbort(char *fname, char *mode);
 
+/************************ main ******************************
+ *
+ * Reads in user input from the terminal and compares two given PPM images.
+ *
+ * Parameters:
+ *         int argc representing the number of arguments on the command line
+ *         char *argv[] representing the arguments on the command line.
+ *
+ * Return: EXIT_SUCCESS if nothing went wrong, EXIT_FAILURE there is an
+ *         invalid argument or too many arguments
+ *
+ * Expects
+ *         argc not to be greater than 3. Any arguments provided are valid
+ *         files containing valid PPMs.
+ * Notes:
+ *         May open and close a file provided, may print out a number
+ *         representing the difference between to PPMs to stdout.
+ *         Will print to stderr if the image heights/widths differ by more
+ *         than 1
+ *         Allocates and frees two Pnm_ppm structs
+ *
+ ************************************************************/
 int main(int argc, char *argv[])
 {
         assert(argc == 3);
@@ -24,7 +60,11 @@ int main(int argc, char *argv[])
         if (abs((int) (image1->height - image2->height)) > 1) {
                 fprintf(stderr, "image heights/widths differ by more than 1\n");
                 printf("1\n");
-                return 0;
+                Pnm_ppmfree(&image1);
+                Pnm_ppmfree(&image2);
+                fclose(fp1);
+                fclose(fp2);
+                return EXIT_FAILURE;
         }
 
         float numerator;
@@ -42,13 +82,11 @@ int main(int argc, char *argv[])
                         float denom2 = image2->denominator;
 
                         numerator +=
-                                pow(((p1->red) / denom1) - ((p2->red) / denom2),
+                                pow((p1->red / denom1) - (p2->red / denom2),
                                     2) +
-                                pow(((p1->green) / denom1) -
-                                            ((p2->green) / denom2),
+                                pow((p1->green / denom1) - (p2->green / denom2),
                                     2) +
-                                pow(((p1->blue) / denom1) -
-                                            ((p2->blue) / denom2),
+                                pow((p1->blue / denom1) - (p2->blue / denom2),
                                     2);
                 }
         }
@@ -57,6 +95,11 @@ int main(int argc, char *argv[])
         float E = sqrt(numerator / bottom);
 
         printf("%.4f\n", E);
+
+        Pnm_ppmfree(&image1);
+        Pnm_ppmfree(&image2);
+        fclose(fp1);
+        fclose(fp2);
         return 0;
 }
 

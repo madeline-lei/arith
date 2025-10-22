@@ -8,8 +8,9 @@
  *
  *     summary:
  *
- *     This file contains the implementation for a UArray2b. It
- *     implements the functions declared in uarray2b.h.
+ *     This file contains the implementation for a UArray2b, which is a UArray2
+ *     whose elements are stored in blocks. It implements the functions 
+ *     declared in uarray2b.h.
  * 
  *     NOTE: This file was provided by the course
  *

@@ -1,0 +1,100 @@
+/**********************************************************
+* HW 4: arith
+* CS 40
+* README
+* Authors: Madeline Lei mlei03, Diana Calderon dcalde02
+* Date: 10/21/25
+*********************************************************/
+
+Acknowledgements
+------------------------------------
+
+    Hanson C Interfaces and Arrays
+    UArray2, UArray2b, a2plain, and a2blocked taken from provided solution
+
+What has been Implemented
+------------------------------------
+    Everything
+
+File Architecture
+------------------------------------
+    40image.c: contains the main driver function for compressing/decompressing
+    an image. Takes in user input to determine which function to perform, and
+    where the image data is coming from
+
+    compress40.c: contains functions to compress/decompress an image. Calls
+    the functions stored in other files to perform this job.
+
+    handleImage.c: contains the implementation for the functions declared in
+    handleImage.h. These functions handle reading in an image to compress/
+    decompress, and handles printing out the resulting compressed/
+    decompressed image to stdout. Also has a function to trim off the last row
+    or column of a PPM so it has even dimensions.
+
+    handleImage.h: contains the declarations for the functions implemented
+    in handleImage.c.
+
+    convertColor.c: contains the implementation for the functions declared in
+    convertColor.h. These functions handle converting the image data from
+    RGB color space to component video color space (and back).
+
+    convertColor.h: contains the declarations for the functions implemented
+    in convertColor.c.
+
+    2x2pack.c: contains the implementations for the functions declared in
+    2x2pack.h. These functions deal with packing pixels of a PPM in 2x2 regions
+    into blocks (for compression), and unpacking those blocks into pixels
+    (for decompression).
+
+    2x2pack.h: contains the declarations for the functions implemented
+    in 2x2pack.c.
+
+    quantize.c: contains the implementations for the functions declared in
+    quantize.h. These functions deal with quantizing image data (for
+    compression) and dequantizing quantized image data (for decompression)
+
+    quantize.h: contains the declarations for the functions implemented
+    in quantize.c.
+
+    packWord.c: contains the implementations for the functions declared in
+    packWord.h. These functions deal with packing the fields of a quantized 2x2
+    block into a 32-bit word (for compression) and unpacking that word
+    back into a quantized blocks (for decompression).
+
+    packWord.h: contains the declarations for the functions implemented
+    in packWord.c.
+
+    bitpack.c: This file contains the implementation for the functions
+    declared in bitpack.h. These functions deal with packing fields into a
+    64-bit word and getting those fields from those words.
+
+    helpers.h: This file contains struct declarations for a closures and
+    image data representations used for compressing and
+    decompressing and image.
+
+    a2blocked.c: This file is an method suite that contains function pointers
+    that can be applied to a UArray2b. It defines a private version
+    of each function in A2Methods_T that we implement.
+
+    a2plain.c: This file is an method suite that contains function pointers
+    that can be applied to a UArray2. It defines a private version of each
+    function in A2Methods_T that we implement.
+
+    uarray2.c: This file contains the implementation for a UArray2. It
+    implements the functions declared in uarray2.h.
+
+    uarray2.h: This file contains an interface for a UArray2. It contains
+    the functions that the client can use to create, edit, and delete an
+    instance of a UArray2.
+
+    uarray2b.c: This file contains the implementation for a UArray2b, which is
+    a UArray2 whose elements are stored in blocks. It implements the functions
+    declared in uarray2b.h.
+
+Time Spent Analyzing
+------------------------------------
+    20 hours
+
+Time Spent Solving
+------------------------------------
+    30 hours
